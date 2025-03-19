@@ -55,9 +55,6 @@ describe("toBucketSets()", () => {
   const result = toBucketSets(buckets);
   assert.deepStrictEqual(result, [new Set(), new Set(), new Set()]);
 });
-
-
-
 });
 
 /*
@@ -66,23 +63,54 @@ describe("toBucketSets()", () => {
  * TODO: Describe your testing strategy for getBucketRange() here.
  */
 describe("getBucketRange()", () => {
-  it("Example test case - replace with your own tests", () => {
-    assert.fail(
-      "Replace this test case with your own tests based on your testing strategy"
-    );
+  it("returns undefined when all buckets are empty", () => {
+    const bucket: Set<Flashcard>[] = [new Set(), new Set(), new Set()];
+    const result = getBucketRange(bucket);
+    assert.strictEqual(result, undefined);
   });
-});
 
-/*
- * Testing strategy for practice():
- *
- * TODO: Describe your testing strategy for practice() here.
- */
-describe("practice()", () => {
-  it("Example test case - replace with your own tests", () => {
-    assert.fail(
-      "Replace this test case with your own tests based on your testing strategy"
-    );
+  it("returns { minBucket: 1, maxBucket: 3 } when flashcards are in non-consecutive buckets", () => {
+    const bucket: Set<Flashcard>[] = [
+      new Set(), 
+      new Set([new Flashcard("A1", "B1", "C1", [])]), 
+      new Set(), 
+      new Set([new Flashcard("A2", "B2", "C2", [])]), 
+      new Set()
+    ];
+    const result = getBucketRange(bucket);
+    assert.deepStrictEqual(result, { minBucket: 1, maxBucket: 3 });
+  });
+
+  it("returns { minBucket: 1, maxBucket: 1 } when only one bucket contains flashcards", () => {
+    const bucket: Set<Flashcard>[] = [
+      new Set(), 
+      new Set([new Flashcard("A1", "B1", "C1", [])]), 
+      new Set()
+    ];
+    const result = getBucketRange(bucket);
+    assert.deepStrictEqual(result, { minBucket: 1, maxBucket: 1 });
+  });
+
+  it("returns { minBucket: 0, maxBucket: 0 } when only the first bucket contains flashcards", () => {
+    const bucket: Set<Flashcard>[] = [
+      new Set([new Flashcard("A1", "B1", "C1", [])]), 
+      new Set(), 
+      new Set()
+    ];
+    const result = getBucketRange(bucket);
+    assert.deepStrictEqual(result, { minBucket: 0, maxBucket: 0 });
+  });
+
+  it("returns { minBucket: 0, maxBucket: 4 } when flashcards are in all buckets", () => {
+    const bucket: Set<Flashcard>[] = [
+      new Set([new Flashcard("A1", "B1", "C1", [])]),
+      new Set([new Flashcard("A2", "B2", "C2", [])]),
+      new Set([new Flashcard("A3", "B3", "C3", [])]),
+      new Set([new Flashcard("A4", "B4", "C4", [])]),
+      new Set([new Flashcard("A5", "B5", "C5", [])]),
+    ];
+    const result = getBucketRange(bucket);
+    assert.deepStrictEqual(result, { minBucket: 0, maxBucket: 4 });
   });
 });
 
