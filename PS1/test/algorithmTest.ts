@@ -120,10 +120,66 @@ describe("getBucketRange()", () => {
  * TODO: Describe your testing strategy for update() here.
  */
 describe("update()", () => {
-  it("Example test case - replace with your own tests", () => {
-    assert.fail(
-      "Replace this test case with your own tests based on your testing strategy"
-    );
+  it("should move the flashcard to bucket 0 if answered incorrectly", () => {
+    const card = new Flashcard("Q1", "A1", "Hint1", []);
+    const buckets: BucketMap = new Map();
+    buckets.set(2, new Set([card])); 
+
+    const updatedBuckets = update(buckets, card, AnswerDifficulty.Wrong);
+
+    assert.strictEqual(updatedBuckets.get(2)?.has(card), false); 
+    assert.strictEqual(updatedBuckets.get(0)?.has(card), true); 
+  });
+
+  it("should move the flashcard to the next bucket if answered hard", () => {
+    const card = new Flashcard("Q2", "A2", "Hint2", []);
+    const buckets: BucketMap = new Map();
+    buckets.set(1, new Set([card])); 
+
+    const updatedBuckets = update(buckets, card, AnswerDifficulty.Hard);
+
+    assert.strictEqual(updatedBuckets.get(1)?.has(card), false); 
+    assert.strictEqual(updatedBuckets.get(2)?.has(card), true); 
+  });
+
+  it("should move the flashcard two buckets forward if answered easy", () => {
+    const card = new Flashcard("Q3", "A3", "Hint3", []);
+    const buckets: BucketMap = new Map();
+    buckets.set(1, new Set([card])); 
+
+    const updatedBuckets = update(buckets, card, AnswerDifficulty.Easy);
+
+    assert.strictEqual(updatedBuckets.get(1)?.has(card), false); 
+    assert.strictEqual(updatedBuckets.get(3)?.has(card), true); 
+  });
+
+  it("should not move beyond the last bucket if answered hard", () => {
+    const card = new Flashcard("Q4", "A4", "Hint4", []);
+    const buckets: BucketMap = new Map();
+    buckets.set(4, new Set([card])); 
+
+    const updatedBuckets = update(buckets, card, AnswerDifficulty.Hard);
+
+    assert.strictEqual(updatedBuckets.get(4)?.has(card), true); 
+  });
+
+  it("should not move beyond the last bucket if answered easy", () => {
+    const card = new Flashcard("Q5", "A5", "Hint5", []);
+    const buckets: BucketMap = new Map();
+    buckets.set(4, new Set([card])); 
+
+    const updatedBuckets = update(buckets, card, AnswerDifficulty.Easy);
+
+    assert.strictEqual(updatedBuckets.get(4)?.has(card), true); 
+  });
+
+  it("should correctly handle an empty bucket scenario", () => {
+    const card = new Flashcard("Q6", "A6", "Hint6", []);
+    const buckets: BucketMap = new Map();
+
+    const updatedBuckets = update(buckets, card, AnswerDifficulty.Hard);
+
+    assert.strictEqual(updatedBuckets.get(0)?.has(card), true); 
   });
 });
 
