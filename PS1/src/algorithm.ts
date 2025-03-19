@@ -102,9 +102,43 @@ export function update(
   card: Flashcard,
   difficulty: AnswerDifficulty
 ): BucketMap {
-  // TODO: Implement this function
-  throw new Error("Implement me!");
+  const updatedBuckets = new Map(buckets); 
+  let currentBucket: number | undefined = undefined;
+
+ 
+  for (const [bucketIndex, cards] of updatedBuckets.entries()) {
+    if (cards.has(card)) {
+      currentBucket = bucketIndex;
+      cards.delete(card); 
+      break;
+    }
+  }
+
+  
+  if (currentBucket === undefined) {
+    currentBucket = 0;
+  }
+
+ 
+  let newBucket: number;
+  if (difficulty === AnswerDifficulty.Wrong) {
+    newBucket = 0;
+  } else if (difficulty === AnswerDifficulty.Hard) {
+    newBucket = Math.min(currentBucket + 1, 4); 
+  } else { 
+    newBucket = Math.min(currentBucket + 2, 4); 
+  }
+
+  
+  if (!updatedBuckets.has(newBucket)) {
+    updatedBuckets.set(newBucket, new Set());
+  }
+  updatedBuckets.get(newBucket)!.add(card);
+
+  return updatedBuckets;
 }
+
+
 
 /**
  * Generates a hint for a flashcard.
