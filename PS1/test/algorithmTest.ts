@@ -15,11 +15,49 @@ import {
  * TODO: Describe your testing strategy for toBucketSets() here.
  */
 describe("toBucketSets()", () => {
-  it("Example test case - replace with your own tests", () => {
-    assert.fail(
-      "Replace this test case with your own tests based on your testing strategy"
-    );
+  it("returns an EMPTY array when BucketMap is EMPTY", () => {
+    const buckets : BucketMap = new Map();
+    const result = toBucketSets(buckets);
+    assert.deepStrictEqual(result, []); 
   });
+   
+  it("returns a single element correctly", () => {
+    const card1 : Flashcard = new Flashcard("A1","B1","C1",[]);
+    const card2 : Flashcard = new Flashcard("A2","B2","C2",[]);
+    const buckets : BucketMap = new Map([[0,new Set([card1,card2])]]);
+    const result = toBucketSets(buckets);
+    assert.deepStrictEqual(result,[new Set([card1,card2])]);
+});
+
+  it("fills missing indexes with empty sets", () => {
+    const card1 : Flashcard = new Flashcard("A1","B1","C1",[]);
+    const card2 : Flashcard = new Flashcard("A2","B2","C2",[]);
+    const buckets : BucketMap = new Map([
+      [0,new Set([card1])],
+      [3,new Set([card2])]
+    ]);
+
+    const result = toBucketSets(buckets);
+    assert.deepStrictEqual(result,[
+      new Set([card1]), 
+      new Set(),
+      new Set(),
+      new Set([card2])])
+ });
+  
+ 
+ it("includes empty sets when buckets have no flashcards", () => {
+  const buckets: BucketMap = new Map([
+    [0, new Set()],
+    [1, new Set()],
+    [2, new Set()],
+  ]);
+  const result = toBucketSets(buckets);
+  assert.deepStrictEqual(result, [new Set(), new Set(), new Set()]);
+});
+
+
+
 });
 
 /*
