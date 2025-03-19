@@ -8,6 +8,7 @@ import {
   getHint,
   computeProgress,
 } from "../src/algorithm";
+import { expect } from "chai";
 
 /*
  * Testing strategy for toBucketSets():
@@ -113,6 +114,92 @@ describe("getBucketRange()", () => {
     assert.deepStrictEqual(result, { minBucket: 0, maxBucket: 4 });
   });
 });
+
+
+/*
+ * Testing strategy for practice():
+ *
+ * partitions for bucket:
+ * bucket is empty
+ * bucket is single set
+ * bucket is multiple
+ * 
+ * partition for days:
+ * day = 0
+ * day = 2*n - 1
+ * day > 0
+ * 
+ */
+describe("practice()", () => {
+  it("should return an empty set if there are no flashcards", () => {
+    const buckets: Array<Set<Flashcard>> = [];
+    expect(practice(buckets, 0)).to.deep.equal(new Set());
+    expect(practice(buckets, 3)).to.deep.equal(new Set());
+    expect(practice(buckets, 1)).to.deep.equal(new Set());
+    expect(practice(buckets, 30)).to.deep.equal(new Set());
+    
+    assert.deepStrictEqual(practice(buckets, 0), new Set());
+  });
+    
+  it("when we have one set in bucket", () => {
+    const card1 = new Flashcard("Q1", "A1", "Hint1", []);
+    const card2 = new Flashcard("Q2", "A2", "Hint2", []);
+    const card3 = new Flashcard("Q3", "A3", "Hint3", []);
+
+    const zeroBucketList = new Set([card1, card2, card3]);
+    const buckets: Array<Set<Flashcard>> = [
+      new Set([card1, card2, card3]), // Bucket 0 (review daily)
+    ];
+
+    expect(practice(buckets, 0)).to.deep.equal(zeroBucketList);
+    expect(practice(buckets, 3)).to.deep.equal(zeroBucketList);
+    expect(practice(buckets, 23)).to.deep.equal(zeroBucketList);
+
+    assert.deepStrictEqual(practice(buckets, 5), new Set([card1, card2]));
+  });
+
+  it.only("where we have multiple set in bucket", () => {
+    const card1 = new Flashcard("Q1", "A1", "Hint1", []);
+    const card2 = new Flashcard("Q2", "A2", "Hint2", []);
+    const card3 = new Flashcard("Q3", "A3", "Hint3", []);
+    const card4 = new Flashcard("Q4", "A4", "Hint4", []);
+    const card5 = new Flashcard("Q5", "A5", "Hint5", []);
+    const card6 = new Flashcard("Q6", "A6", "Hint6", []);
+
+    const zeroBucketList = new Set([card1, card2, card3]);
+
+    const thirdBucketList = new Set([card4, card5]);    
+
+    const buckets: Array<Set<Flashcard>> = [
+      zeroBucketList,
+      new Set(),
+      thirdBucketList,
+      new Set(),
+      new Set([card6])
+    ];
+
+    assert.deepStrictEqual(practice(buckets, 4), new Set([card1])); // 4 % (2^1) == 0
+    assert.deepStrictEqual(practice(buckets, 5), new Set()); // 5 % (2^1) != 0
+  });
+
+  it("should return flashcards from higher buckets based on their review schedule", () => {
+    const card1 = new Flashcard("Q1", "A1", "Hint1", []);
+    const card2 = new Flashcard("Q2", "A2", "Hint2", []);
+    const card3 = new Flashcard("Q3", "A3", "Hint3", []);
+
+    const buckets: Array<Set<Flashcard>> = [
+      new Set(), // Bucket 0
+      new Set(), // Bucket 1
+      new Set([card1]), // Bucket 2 (review every 4 days)
+      new Set([card2, card3]) // Bucket 3 (review every 8 days)
+    ];
+
+    assert.deepStrictEqual(practice(buckets, 4), new Set([card1])); // 4 % 4 == 0
+
+    assert.deepStrictEqual(practice(buckets, 10), new Set()); // 10 % 4 != 0, 10 % 8 != 0
+  });
+});
+
 
 /*
  * Testing strategy for update():
