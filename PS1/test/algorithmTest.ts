@@ -189,10 +189,34 @@ describe("update()", () => {
  * TODO: Describe your testing strategy for getHint() here.
  */
 describe("getHint()", () => {
-  it("Example test case - replace with your own tests", () => {
-    assert.fail(
-      "Replace this test case with your own tests based on your testing strategy"
-    );
+  it("should return the predefined hint if available", () => {
+    const card = new Flashcard("What is 2+2?", "4", "Think of pairs", []);
+    assert.strictEqual(getHint(card), "Think of pairs");
+  });
+
+  it("should generate a hint by hiding some characters if no predefined hint exists", () => {
+    const card = new Flashcard("Elephant", "A large mammal", "", []);
+    
+    
+    assert.strictEqual(getHint(card), "E******t");
+  });
+
+  it("should handle single-letter words correctly", () => {
+    const card = new Flashcard("A", "First letter of the alphabet", "", []);
+    
+    assert.strictEqual(getHint(card), "A"); 
+  });
+
+  it("should handle short words with only 2 or 3 letters", () => {
+    const card = new Flashcard("Cat", "A small pet", "", []);
+    
+    assert.strictEqual(getHint(card), "C*t");
+  });
+
+  it("should return a default message if the front text is empty", () => {
+    const card = new Flashcard("", "Answer", "", []);
+    
+    assert.strictEqual(getHint(card), "No hint available");
   });
 });
 
