@@ -148,8 +148,27 @@ export function update(
  * @spec.requires card is a valid Flashcard.
  */
 export function getHint(card: Flashcard): string {
-  // TODO: Implement this function (and strengthen the spec!)
-  throw new Error("Implement me!");
+
+  if (card.hint.trim().length > 0) {
+    return card.hint;
+  }
+
+
+  if (card.front.trim().length === 0) {
+    return "No hint available";
+  }
+
+ 
+  if (card.front.length <= 2) {
+    return card.front;
+  }
+
+  const firstLetter = card.front[0];
+  const lastLetter = card.front[card.front.length - 1];
+  const maskedMiddle = "*".repeat(card.front.length - 2);
+
+  return `${firstLetter}${maskedMiddle}${lastLetter}`;
+
 }
 
 /**
