@@ -308,9 +308,88 @@ describe("getHint()", () => {
  * TODO: Describe your testing strategy for computeProgress() here.
  */
 describe("computeProgress()", () => {
-  it("Example test case - replace with your own tests", () => {
-    assert.fail(
-      "Replace this test case with your own tests based on your testing strategy"
-    );
+  
+  it("works with a mix of flashcards across multiple buckets", () => {
+    const card1 = new Flashcard("Q1", "A1", "", []);
+    const card2 = new Flashcard("Q2", "A2", "", []);
+    const card3 = new Flashcard("Q3", "A3", "", []);
+    const buckets = new Map([
+      [0, new Set([card1])],
+      [2, new Set([card2])],
+      [3, new Set([card3])],
+    ]);
+    const history = [
+      { day: 1, card: card1, difficulty: AnswerDifficulty.Wrong },
+      { day: 2, card: card2, difficulty: AnswerDifficulty.Hard },
+      { day: 3, card: card3, difficulty: AnswerDifficulty.Easy },
+    ];
+    
+    const result = computeProgress(buckets, history);
+    
+    assert.strictEqual(result.totalCards, 3);
+    assert.deepStrictEqual(result.bucketDistribution, { 0: 1, 2: 1, 3: 1 });
+    assert.strictEqual(result.averageBucket, (0 + 2 + 3) / 3);
+    assert.deepStrictEqual(result.practiceHistory, { 1: 1, 2: 1, 3: 1 });
+    assert.strictEqual(result.accuracyRate, (2 / 3) * 100);
+  });
+
+  it("handles all flashcards being in the same bucket", () => {
+    const card1 = new Flashcard("Q1", "A1", "", []);
+    const card2 = new Flashcard("Q2", "A2", "", []);
+    const buckets = new Map([[0, new Set([card1, card2])]]);
+    const history = [
+      { day: 1, card: card1, difficulty: AnswerDifficulty.Hard },
+      { day: 2, card: card2, difficulty: AnswerDifficulty.Wrong },
+    ];
+    
+    const result = computeProgress(buckets, history);
+    
+    assert.strictEqual(result.totalCards, 2);
+    assert.deepStrictEqual(result.bucketDistribution, { 0: 2 });
+    assert.strictEqual(result.averageBucket, 0);
+    assert.deepStrictEqual(result.practiceHistory, { 1: 1, 2: 1 });
+    assert.strictEqual(result.accuracyRate, (1 / 2) * 100);
+  });
+
+  it("handles a case where no correct answers were given", () => {
+    const card1 = new Flashcard("Q1", "A1", "", []);
+    const card2 = new Flashcard("Q2", "A2", "", []);
+    const buckets = new Map([[1, new Set([card1, card2])]]);
+    const history = [
+      { day: 1, card: card1, difficulty: AnswerDifficulty.Wrong },
+      { day: 2, card: card2, difficulty: AnswerDifficulty.Wrong },
+    ];
+    
+    const result = computeProgress(buckets, history);
+    
+    assert.strictEqual(result.accuracyRate, 0);
+  });
+
+  it("handles a case where all answers were correct", () => {
+    const card1 = new Flashcard("Q1", "A1", "", []);
+    const card2 = new Flashcard("Q2", "A2", "", []);
+    const buckets = new Map([[2, new Set([card1, card2])]]);
+    const history = [
+      { day: 1, card: card1, difficulty: AnswerDifficulty.Easy },
+      { day: 2, card: card2, difficulty: AnswerDifficulty.Hard },
+    ];
+    
+    const result = computeProgress(buckets, history);
+    
+    assert.strictEqual(result.accuracyRate, 100);
+  });
+
+  it("handles a single practice session", () => {
+    const card1 = new Flashcard("Q1", "A1", "", []);
+    const buckets = new Map([[3, new Set([card1])]]);
+    const history = [{ day: 1, card: card1, difficulty: AnswerDifficulty.Hard }];
+    
+    const result = computeProgress(buckets, history);
+    
+    assert.strictEqual(result.totalCards, 1);
+    assert.deepStrictEqual(result.bucketDistribution, { 3: 1 });
+    assert.strictEqual(result.averageBucket, 3);
+    assert.deepStrictEqual(result.practiceHistory, { 1: 1 });
+    assert.strictEqual(result.accuracyRate, 100);
   });
 });
