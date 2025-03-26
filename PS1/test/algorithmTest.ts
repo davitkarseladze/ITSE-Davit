@@ -148,7 +148,7 @@ describe("practice()", () => {
 
     const zeroBucketList = new Set([card1, card2, card3]);
     const buckets: Array<Set<Flashcard>> = [
-      new Set([card1, card2, card3]), // Bucket 0 (review daily)
+      new Set([card1, card2, card3]), 
     ];
 
     expect(practice(buckets, 0)).to.deep.equal(zeroBucketList);
@@ -158,7 +158,7 @@ describe("practice()", () => {
     assert.deepStrictEqual(practice(buckets, 5), new Set([card1, card2]));
   });
 
-  it.only("where we have multiple set in bucket", () => {
+  it("where we have multiple set in bucket", () => {
     const card1 = new Flashcard("Q1", "A1", "Hint1", []);
     const card2 = new Flashcard("Q2", "A2", "Hint2", []);
     const card3 = new Flashcard("Q3", "A3", "Hint3", []);
@@ -178,8 +178,8 @@ describe("practice()", () => {
       new Set([card6])
     ];
 
-    assert.deepStrictEqual(practice(buckets, 4), new Set([card1])); // 4 % (2^1) == 0
-    assert.deepStrictEqual(practice(buckets, 5), new Set()); // 5 % (2^1) != 0
+    assert.deepStrictEqual(practice(buckets, 4), new Set([card1])); 
+    assert.deepStrictEqual(practice(buckets, 5), new Set()); 
   });
 
   it("should return flashcards from higher buckets based on their review schedule", () => {
@@ -188,15 +188,15 @@ describe("practice()", () => {
     const card3 = new Flashcard("Q3", "A3", "Hint3", []);
 
     const buckets: Array<Set<Flashcard>> = [
-      new Set(), // Bucket 0
-      new Set(), // Bucket 1
-      new Set([card1]), // Bucket 2 (review every 4 days)
-      new Set([card2, card3]) // Bucket 3 (review every 8 days)
+      new Set(), 
+      new Set(), 
+      new Set([card1]), 
+      new Set([card2, card3]) 
     ];
 
-    assert.deepStrictEqual(practice(buckets, 4), new Set([card1])); // 4 % 4 == 0
+    assert.deepStrictEqual(practice(buckets, 4), new Set([card1])); 
 
-    assert.deepStrictEqual(practice(buckets, 10), new Set()); // 10 % 4 != 0, 10 % 8 != 0
+    assert.deepStrictEqual(practice(buckets, 10), new Set()); 
   });
 });
 

@@ -172,13 +172,26 @@ export function getHint(card: Flashcard): string {
 }
 
 /**
- * Computes statistics about the user's learning progress.
+ * Figures out how well the user is doing with their flashcards.
  *
- * @param buckets representation of learning buckets.
- * @param history representation of user's answer history.
- * @returns statistics about learning progress.
- * @spec.requires [SPEC TO BE DEFINED]
+ * @param buckets A map where:
+ *        - The keys are bucket numbers (starting from 0).
+ *        - The values are sets of flashcards in each bucket.
+ * @param history A list of past practice attempts.
+ *        Each entry in the list has:
+ *        - day: The day the user practiced.
+ *        - card: The flashcard that was practiced.
+ *        - difficulty: How well the user did (Wrong, Hard, or Easy).
+ * @returns An object with stats about the user's progress:
+ *          - totalCards: How many flashcards exist in total.
+ *          - bucketDistribution: Shows how many cards are in each bucket.
+ *          - averageBucket: The average bucket number (higher = better progress).
+ *          - practiceHistory: Tracks how many flashcards were practiced each day.
+ *          - accuracyRate: Percentage of correct answers (Hard or Easy) out of all attempts.
+ * @spec.requires buckets is a valid map of flashcard buckets.
+ * @spec.requires history is a valid list of past practice attempts (not empty).
  */
+
 export function computeProgress(buckets: any, history: any): any {
   // Replace 'any' with appropriate types
   // TODO: Implement this function (and define the spec!)
