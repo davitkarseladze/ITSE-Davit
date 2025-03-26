@@ -191,9 +191,47 @@ export function getHint(card: Flashcard): string {
  * @spec.requires buckets is a valid map of flashcard buckets.
  * @spec.requires history is a valid list of past practice attempts (not empty).
  */
+export function computeProgress(
+  buckets: BucketMap,
+  history: { day: number; card: Flashcard; difficulty: AnswerDifficulty }[]
+): {
+  totalCards: number;
+  bucketDistribution: { [key: number]: number };
+  averageBucket: number;
+  practiceHistory: { [key: number]: number };
+  accuracyRate: number;
+} {
+  let totalCards = 0;
+  let bucketDistribution: { [key: number]: number } = {};
+  let totalBucketSum = 0;
+  let totalAttempts = 0;
+  let correctAttempts = 0;
+  let practiceHistory: { [key: number]: number } = {};
 
-export function computeProgress(buckets: any, history: any): any {
-  // Replace 'any' with appropriate types
-  // TODO: Implement this function (and define the spec!)
-  throw new Error("Implement me!");
+  buckets.forEach((cards, bucketNumber) => {
+    const count = cards.size;
+    totalCards += count;
+    bucketDistribution[bucketNumber] = count;
+    totalBucketSum += bucketNumber * count;
+  });
+
+  const averageBucket = totalCards > 0 ? totalBucketSum / totalCards : 0;
+
+  history.forEach(({ day, difficulty }) => {
+    practiceHistory[day] = (practiceHistory[day] || 0) + 1;
+    totalAttempts++;
+    if (difficulty === AnswerDifficulty.Hard || difficulty === AnswerDifficulty.Easy) {
+      correctAttempts++;
+    }
+  });
+
+  const accuracyRate = totalAttempts > 0 ? (correctAttempts / totalAttempts) * 100 : 0;
+
+  return {
+    totalCards,
+    bucketDistribution,
+    averageBucket,
+    practiceHistory,
+    accuracyRate,
+  };
 }
